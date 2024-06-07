@@ -70,8 +70,8 @@ def follow(request):
             delete_follower.delete()
             return redirect('/profile/'+ user)
         else:
-            new_follow=FollowersCount.objects.create(follower=follower, user=user)
-            new_follow.save()
+            new_follower=FollowersCount.objects.create(follower=follower, user=user)
+            new_follower.save()
             return redirect('/profile/'+ user)
     else:
         return redirect('/')
@@ -85,12 +85,26 @@ def profile(request,pk):
     user_posts=Post.objects.filter(user=pk)
     user_post_length=len(user_posts)
 
+    follower=request.user.username
+    user= pk
+
+    if FollowersCount.objects.filter(follower=follower, user=user).first():
+        button_text='Unfollow'
+    else:
+        button_text='Follow'
+
+
+    user_followers=len(FollowersCount.objects.filter(user=pk))
+    user_following=len(FollowersCount.objects.filter(follower=pk))
 
     context={
         'user_object':user_object,
         'user_profile': user_profile,
         'user_posts':user_posts,
         'user_post_length':user_post_length,
+        'button_text':button_text,
+        'user_followers':user_followers,
+        'user_following':user_following,
     }
     return render(request,'profile.html',context)
 
